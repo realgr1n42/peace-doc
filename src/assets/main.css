@@ -1,35 +1,38 @@
 @import './base.css';
 
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  font-weight: normal;
+* {
+    font-family: "JetBrains Mono", monospace;
 }
 
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-  padding: 3px;
+
+.color-a {
+    color: #4811AE;
+}
+.color-b {
+    color: #492A82;
+}
+.color-c {
+    color: #2C0571;
+}
+.color-d {
+    color: #7945D6;
+}
+.color-e {
+     color: #926CD6;
 }
 
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
+.background-color-a {
+    background-color: #4811AE;
 }
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
+.background-color-b {
+    background-color: #492A82;
+}
+.background-color-c {
+    background-color: #2C0571;
+}
+.background-color-d {
+    background-color: #7945D6;
+}
+.background-color-e {
+    background-color: #926CD6;
 }
