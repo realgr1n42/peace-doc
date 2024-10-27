@@ -1,50 +1,146 @@
 <template>
   <div class="container background-color-c">
+    <div class="content background-color-b">
+      <p class="color-e">{{ speeches[currentSpeech]?.speech }}</p>
+    </div>
+    <div class="buttons background-color-b">
+      <button
+          class="background-color-d btn"
+          :class="{ 'btn-disabled': currentSpeech === 0 }"
+          @click="prevStep"
+          :disabled="currentSpeech === 0"
+      ><- НАЗАД</button>
+      <button
+          class="background-color-d btn"
+          :class="{ 'btn-disabled': currentSpeech === speeches.length - 1 }"
+          @click="nextStep"
+          :disabled="currentSpeech === speeches.length - 1"
+      >ДАЛЕЕ -></button>
+    </div>
     <div class="steps background-color-a scrollable">
-      <h2>STEPS</h2>
-      <div class="">
-        <div class="step-box background-color-d" v-for="step in steps" :key="step">
-          <p class="color-b">{{ step }}</p>
+      <h2>ЗАБОРЫ</h2>
+      <div>
+        <div
+            class="step-box background-color-d"
+            v-for="(fence, index) in speeches[currentSpeech]?.fences"
+            :key="index"
+            @click="showModal(fence)"
+        >
+          <h3 class="color-b">{{ fence.title }}</h3>
         </div>
       </div>
     </div>
-
-    <div class="content background-color-b">
-      <p class="color-e">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+    <!-- Modal -->
+    <div v-if="isModalVisible" class="modal-overlay " @click.self="closeModal">
+      <div class="modal-content color-a background-color-c">
+        <h3>{{ selectedFence?.title }}</h3>
+        <p>{{ selectedFence?.text }}</p>
+        <button class="btn-close" @click="closeModal">Закрыть</button>
+      </div>
     </div>
-    <div class="buttons background-color-b">
-      <button class="background-color-d btn" v-for="button in buttons" :key="button">{{ button }}</button>
-    </div>
-
   </div>
 </template>
 
+
 <script>
+import axios from 'axios';
+
 export default {
   data() {
     return {
-      steps: ["СТАРТ","ЭТАП","ЭТАП","ЭТАП","ЭТАП","КОНЕЦ",],
-      buttons: ["<- НАЗАД", "ЗАБОР", "ДАЛЕЕ ->"]
+      speeches: [],
+      currentSpeech: 0,
+      isModalVisible: false,
+      selectedFence: null
     };
+  },
+  methods: {
+    nextStep() {
+      if (this.currentSpeech < this.speeches.length - 1) {
+        this.currentSpeech++;
+      }
+    },
+    prevStep() {
+      if (this.currentSpeech > 0) {
+        this.currentSpeech--;
+      }
+    },
+    async loadSpeeches() {
+      try {
+        const response = await axios.get('/speeches.json');
+        this.speeches = response.data.speeches;
+      } catch (error) {
+        console.error("Failed to load speeches:", error);
+      }
+    },
+    showModal(fence) {
+      this.selectedFence = fence;
+      this.isModalVisible = true;
+    },
+    closeModal() {
+      this.isModalVisible = false;
+      this.selectedFence = null;
+    }
+  },
+  mounted() {
+    this.loadSpeeches();
   }
 };
+
 </script>
 
 <style scoped>
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 80%;
+  max-width: 500px;
+  text-align: center;
+}
+
+.btn-close {
+  margin-top: 20px;
+  padding: 8px 16px;
+  border: none;
+  background-color: #444;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+}
 
 .container {
   display: grid;
-  grid-template-columns: 1fr 3fr;
-  grid-template-rows: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 3fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr 1fr 1fr;
   grid-template-areas:
-    "steps content"
-    "steps content"
-    "steps content"
-    "steps buttons";
+    "content steps"
+    "content steps"
+    "content steps"
+    "content steps"
+    "buttons steps";
   height: 100vh;
 }
+
+.btn-disabled {
+  background-color: #ccc;
+  color: #666;
+  cursor: not-allowed;
+}
+
 
 .steps {
   grid-area: steps;
@@ -65,7 +161,10 @@ export default {
   border: 5px solid black;
   height: 150px;
   margin: 8px;
+  padding: 10px;
   border-radius: 16px;
+  text-align: center;
+  font-size: 10pt;
 }
 
 .step-box p {
