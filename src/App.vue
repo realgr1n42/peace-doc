@@ -58,8 +58,20 @@
     <div v-if="isModalVisible" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content color-a background-color-c">
         <h3>{{ selectedFence?.title }}</h3>
-        <p v-if="selectedFence?.text !== ''">{{ selectedFence?.text }}</p>
-        <br v-if="selectedFence?.text !== ''">
+
+        <div v-if="Array.isArray(selectedFence?.text)"
+             v-for="(text, index) in selectedFence?.text"
+             :key="index">
+          <br v-if="text === ''">
+          <p v-else-if="text !== ''">{{ text }}</p>
+          <br>
+        </div>
+        <div v-else>
+          <br v-if="selectedFence?.text === ''">
+          <p v-else-if="selectedFence?.text !== ''">{{ selectedFence?.text }}</p>
+        </div>
+
+
         <!-- Nested fences in modal -->
         <div class="" v-if="selectedFence?.fences && selectedFence.fences.length > 0">
 
@@ -159,31 +171,12 @@ export default {
   margin: 16px;
 }
 
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal-content {
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 80%;
-  max-width: 700px;
-  text-align: center;
-  font-size: 17pt;
-}
-
 .modal-content h3, .modal-content h4 {
   margin-bottom: 20px;
+}
+
+.modal-content p {
+  text-align: justify;
 }
 
 .btn-close, .btn-close-nested {
@@ -237,12 +230,11 @@ export default {
 
 .modal-content {
   background: white;
-  padding: 20px;
   border-radius: 8px;
-  width: 80%;
-  max-width: 700px;
+  width: 70%;
   text-align: center;
   font-size: 17pt;
+  padding: 32px;
 }
 
 .modal-content h3 {
@@ -324,7 +316,7 @@ export default {
   border-radius: 16px;
   margin: 16px;
   font-weight: bold;
-  font-size: 30px;
+  font-size: 22px;
 }
 
 .buttons {
